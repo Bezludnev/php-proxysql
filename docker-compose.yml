@@ -1,0 +1,69 @@
+version: '3'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: .ops/docker/nginx/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: mysql://web_news_user:password@db:3306/web_news?serverVersion=5.7&charset=utf8mb4
+    volumes:
+      - .:/var/www/app
+    depends_on:
+      - php-fpm
+      - db
+    networks:
+      - app-network
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: .ops/docker/php/Dockerfile
+    volumes:
+      - .:/var/www/app
+    environment:
+      DATABASE_URL: mysql://web_news_user:password@db:3306/web_news?serverVersion=5.7&charset=utf8mb4
+    depends_on:
+      - db
+    networks:
+      - app-network
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: web_news
+      MYSQL_USER: web_news_user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+  proxysql:
+    build:
+      context: .
+      dockerfile: .ops/docker/proxysql/Dockerfile
+    environment:
+      - PROXYSQL_MYSQL_MONITOR_USERNAME=web_news_user
+      - PROXYSQL_MYSQL_MONITOR_PASSWORD=password
+      - PROXYSQL_MYSQL_BACKEND_USERNAME=web_news_user
+      - PROXYSQL_MYSQL_BACKEND_PASSWORD=password
+      # Добавьте переменные окружения для замены значений в proxysql.cnf.tpl
+      - ADMIN_CREDENTIALS=admin:admin
+      # ...
+    ports:
+      - "6032:6032"
+      - "6033:6033"
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
+volumes:
+  db-data:

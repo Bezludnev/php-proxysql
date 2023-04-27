@@ -1,0 +1,5 @@
+location ~* \.(?:jpe?g|png|gif|svg|css|css.map|js|eot|svg|ttf|woff|woff2|ico)$ {
+    try_files $uri =404;
+    add_header 'Cache-Control' 'max-age=0';
+    access_log off;
+}

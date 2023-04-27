@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block body %}
+<h1>Регистрация</h1>
+
+{% if errors is defined %}
+    <ul>
+        {% for error in errors %}
+            <li>{{ error.message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form action="{{ path('register') }}" method="post">
+    <div>
+        <label for="message">Сообщение:</label>
+        <input type="text" id="message" name="message" required>
+    </div>
+    <div>
+        <button type="submit">Записать</button>
+    </div>
+</form>
+{% endblock %}
+
+

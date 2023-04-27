@@ -1,0 +1,28 @@
+
+
+
+location = /package.json { return 404; }
+location ~ /composer\.json$ { return 404; }
+location = /composer.lock { return 404; }
+location ^~ /vendor/composer/ { return 404; }
+location ~* (\.svn|^/cron|\.git) { return 404; }
+
+location = /static/status.json {
+    access_log off;
+    return 200 '{"available": "true"}';
+    default_type "application/json";
+    add_header Cache-Control "public,max-age=1,s-maxage=600";
+}
+
+location = /status.json {
+    access_log off;
+    return 200 '{"available": "true"}';
+    default_type "application/json";
+    add_header Cache-Control "public,max-age=1,s-maxage=600";
+}
+
+location = /status {
+    access_log off;
+    allow 127.0.0.1;
+    deny all;
+}
