@@ -2,36 +2,66 @@ datadir="/var/lib/proxysql"
 
 admin_variables=
 {
-	admin_credentials="admin:admin;radmin:radmin"
-	mysql_ifaces="0.0.0.0:6032"
+    restapi_enabled=true
+    restapi_port=6070
+    prometheus_memory_metrics_interval=60
+	admin_credentials="admin:admin"
+	mysql_ifaces="127.0.0.1:6032"
 }
-
 mysql_variables=
 {
 	threads=4
 	max_connections=2048
 	default_query_delay=0
-	default_query_timeout=36000000
+	default_query_timeout=3600000
 	have_compress=true
 	poll_timeout=2000
-	interfaces="0.0.0.0:6033"
+	interfaces="0.0.0.0:6033;/tmp/proxysql.sock"
 	default_schema="information_schema"
 	stacksize=1048576
 	server_version="5.5.30"
 	connect_timeout_server=3000
 	monitor_username="web_news_user"
-	monitor_password="password"
-	monitor_history=600000
-	monitor_connect_interval=60000
-	monitor_ping_interval=10000
-	monitor_read_only_interval=1500
-	monitor_read_only_timeout=500
-	ping_interval_server_msec=120000
-	ping_timeout_server=500
-	commands_stats=true
-	sessions_sort=true
-	connect_retries_on_failure=10
+    monitor_password="password"
+    monitor_history=60000
+    monitor_connect_interval=2000
+    monitor_ping_interval=10000
+    monitor_read_only_interval=1500
+    monitor_replication_lag_interval=10000
+
 }
 
+mysql_users =
+(
+	{
+		username = "web_news_user"
+		password = "password"
+		default_hostgroup = 1
+		max_connections = 1000
+	}
+)
 
-DATABASE_URL=mysql://web_news_user:password@127.0.0.1:3306/web_news?serverVersion=5.7&charset=utf8mb4
+mysql_servers =
+(
+	{
+		address = "db"
+		port = 3306
+		hostgroup = 1
+	}
+)
+
+
+
+
+scheduler =
+(
+	{
+		id = 1
+		active = 0
+		interval_ms = 60000
+		filename = "/var/lib/proxysql/proxysql_galera_checker.sh"
+		arg1 = "1"
+		arg2 = "1"
+		arg3 = "0"
+	}
+)
