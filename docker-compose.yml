@@ -60,6 +60,23 @@ services:
       - "6033:6033"
     networks:
       - app-network
+  sysbench:
+    build:
+      context: .
+      dockerfile: .ops/docker/sysbench/Dockerfile
+    depends_on:
+      - proxysql
+      - db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: web_news
+      MYSQL_USER: web_news_user
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./output:/tmp/output
+    networks:
+      - app-network
+
 
 
 networks:
